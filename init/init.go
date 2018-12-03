@@ -3,7 +3,7 @@ package init
 import (
 	"errors"
 	"github.com/go-xorm/xorm"
-	"gwx/context"
+	"github.com/jwei2006/gwx/context"
 )
 
 var contextMap = make(map[string]context.Context, 0)
