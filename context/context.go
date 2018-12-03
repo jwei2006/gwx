@@ -7,6 +7,7 @@ import (
 
 // Context struct
 type Context struct {
+	Tag            string
 	AppID          string
 	AppSecret      string
 	Token          string

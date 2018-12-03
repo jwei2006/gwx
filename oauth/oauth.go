@@ -30,6 +30,10 @@ func NewOauth(context *context.Context) *Oauth {
 }
 
 //GetRedirectURL 获取跳转的url地址
+/*
+scope:snsapi_base/snsapi_userinfo
+state:填写在公众号的值，或者任意。重定向后会带上
+*/
 func (oauth *Oauth) GetRedirectURL(redirectURI, scope, state string) (string, error) {
 	//url encode
 	urlStr := url.QueryEscape(redirectURI)
@@ -37,6 +41,10 @@ func (oauth *Oauth) GetRedirectURL(redirectURI, scope, state string) (string, er
 }
 
 //Redirect 跳转到网页授权
+/*
+scope:snsapi_base/snsapi_userinfo
+state:填写在公众号的值，或者任意。重定向后会带上
+*/
 func (oauth *Oauth) Redirect(writer http.ResponseWriter, req *http.Request, redirectURI, scope, state string) error {
 	location, err := oauth.GetRedirectURL(redirectURI, scope, state)
 	if err != nil {
