@@ -8,7 +8,7 @@ import (
 	"github.com/jwei2006/gwx/util"
 )
 
-func CheckSignature(wechatCtx context.Context, c *gin.Context)  {
+func CheckSignature(c *gin.Context)  {
 	signature := c.Query("signature")
 	timestamp := c.Query("timestamp")
 	nonce := c.Query("nonce")
