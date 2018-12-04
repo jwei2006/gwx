@@ -16,8 +16,8 @@ type Context struct {
 	PayNotifyURL   string
 	PayKey         string
 
-	Writer  http.ResponseWriter
-	Request *http.Request
+	//Writer  http.ResponseWriter
+	//Request *http.Request
 
 	//accessTokenLock 读写锁 同一个AppID一个
 	//accessTokenLock *sync.RWMutex
@@ -27,14 +27,13 @@ type Context struct {
 }
 
 // Query returns the keyed url query value if it exists
-func (ctx *Context) Query(key string) string {
-	value, _ := ctx.GetQuery(key)
+func (ctx *Context) Query(req *http.Request, writer  http.ResponseWriter, key string) string {
+	value, _ := ctx.GetQuery(req, writer, key)
 	return value
 }
 
 // GetQuery is like Query(), it returns the keyed url query value
-func (ctx *Context) GetQuery(key string) (string, bool) {
-	req := ctx.Request
+func (ctx *Context) GetQuery(req *http.Request, writer  http.ResponseWriter, key string) (string, bool) {
 	if values, ok := req.URL.Query()[key]; ok && len(values) > 0 {
 		return values[0], true
 	}

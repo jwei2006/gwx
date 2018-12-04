@@ -22,7 +22,7 @@ func main() {
 		log.Println(e)
 		return
 	}
-	defer System.FinallyClose()
+	defer system.FinallyClose()
 	router := gin.Default()
 	store := sessions.NewCookieStore([]byte(config.CookieStore))
 	router.Use(sessions.Sessions(config.SessionName, store))

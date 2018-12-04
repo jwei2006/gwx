@@ -6,9 +6,11 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/md5"
+	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"io"
 )
 
 //EncryptMsg 加密消息
@@ -196,4 +198,54 @@ func MD5Sum(txt string) (sum string) {
 	hex.Encode(sign, h.Sum(nil))
 	sum = string(bytes.ToUpper(sign))
 	return
+}
+func AesEncrypt(src []byte, key []byte) ([]byte, error) {
+	k := len(key)
+	if len(src)%k != 0 {
+		src = PKCS7Pad(src, k)
+	}
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+
+	iv := make([]byte, aes.BlockSize)
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+		return nil, err
+	}
+
+	dst := make([]byte, len(src))
+	cipher.NewCBCEncrypter(block, iv).CryptBlocks(dst, src)
+
+	return dst, nil
+}
+func AesDecrypt(src, key []byte) (dst []byte, err error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	iv := make([]byte, aes.BlockSize)
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+		return nil, err
+	}
+	dst = make([]byte, len(src))
+	cipher.NewCBCDecrypter(block, iv).CryptBlocks(dst, src)
+
+	return PKCS7UnPad(dst), nil
+}
+
+// PKCS7UnPad PKSC#7解包
+func PKCS7UnPad(msg []byte) []byte {
+	length := len(msg)
+	padlen := int(msg[length-1])
+	return msg[:length-padlen]
+}
+func PKCS7Pad(msg []byte, blockSize int) []byte {
+	if blockSize < 1<<1 || blockSize >= 1<<8 {
+		panic("unsupported block size")
+	}
+	padlen := blockSize - len(msg)%blockSize
+	padding := bytes.Repeat([]byte{byte(padlen)}, padlen)
+	return append(msg, padding...)
 }
